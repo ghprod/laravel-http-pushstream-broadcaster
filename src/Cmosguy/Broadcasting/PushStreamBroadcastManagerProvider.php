@@ -2,26 +2,25 @@
 
 namespace Cmosguy\Broadcasting;
 
-use Illuminate\Support\ServiceProvider;
-use GuzzleHttp\Client;
 use Cmosguy\Broadcasting\Broadcasters\PushStreamBroadcaster;
-
+use GuzzleHttp\Client;
+use Illuminate\Support\ServiceProvider;
 
 class PushStreamBroadcastManagerProvider extends ServiceProvider
 {
-
     public function boot()
     {
-
         $this->app->make('Illuminate\Broadcasting\BroadcastManager')->extend('pushstream', function ($app, $config) {
             $client = new Client([
                 'base_url' => $config['base_url'],
-                'query'    => [
-                    'access_key' => $config['access_key']
-                ]
+                'defaults' => [
+                    'query' => [
+                        'access_key' => $config['access_key'],
+                    ],
+                ],
             ]);
-            
-            if (!empty($config['cert'])) {
+
+            if (! empty($config['cert'])) {
                 $client->setDefaultOption('verify', $config['cert']);
             }
 
@@ -31,12 +30,8 @@ class PushStreamBroadcastManagerProvider extends ServiceProvider
 
     /**
      * Register the service provider.
-     *
-     * @return void
      */
     public function register()
     {
     }
-
-
 }
